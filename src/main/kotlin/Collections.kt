@@ -30,4 +30,6 @@ fun unicList1(list: List<Int>): Set<Int> { // run 10 - 15 times faster then unic
             result.add(e)
     }
     return result
+
+
 }
