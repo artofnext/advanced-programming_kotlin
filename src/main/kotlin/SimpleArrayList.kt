@@ -46,6 +46,7 @@ fun test2 () {
     list.add(49)
     list.add(38)
 
+    // Todo ??? Problem with comparison in lambda - when use < or > get type mismatch Unit - Boolean ???
     val c = list.count { a: Any? -> a == 2 }
     println(c)
 }
@@ -59,6 +60,7 @@ class SimpleArrayList<T> {
     var isEmpty = {size == 0}
 
     fun add(elem: Any?) {
+        check(elem == null) {"can't add null"}
         if (size == elements.size)
             elements = elements.copyOf(elements.size + 10)
         elements[size] = elem
