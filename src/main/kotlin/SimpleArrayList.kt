@@ -1,7 +1,9 @@
 fun main() {
     //test1()
 
-    test2()
+    //test2()
+
+    test3()
 }
 
 fun test1() {
@@ -47,8 +49,30 @@ fun test2 () {
     list.add(38)
 
     // Todo ??? Problem with comparison in lambda - when use < or > get type mismatch Unit - Boolean ???
-    val c = list.count { a: Any? -> a == 2 }
+    val c = list.count { it: Any? -> it == 2 }
     println(c)
+}
+
+fun test3 () {
+    val list = SimpleArrayList<Int>()
+    list.add(12)
+    list.add(122)
+    list.add(2)
+    list.add(25)
+    list.add(2)
+    list.add(0)
+    list.add(48)
+    list.add(49)
+    list.add(38)
+    list.add(0)
+    list.add(0)
+    list.add(0)
+    list.add(38)
+
+    val (neg, pos) = list.partition {it: Any? -> it == 0 }
+
+    println(neg)
+    println(pos)
 }
 
 class SimpleArrayList<T> {
@@ -57,7 +81,7 @@ class SimpleArrayList<T> {
     var size = 0
         private set
 
-    var isEmpty = {size == 0}
+    var isEmpty:  Boolean = size == 0
 
     fun add(elem: Any?) {
         check(elem == null) {"can't add null"}
@@ -97,5 +121,18 @@ class SimpleArrayList<T> {
             if (accept(this.get(i))) counter++
         }
         return counter
+    }
+
+    fun partition(condition: (it: Any?) -> Boolean): Pair<SimpleArrayList<T>, SimpleArrayList<T>> {
+        val arr1: SimpleArrayList<T> = SimpleArrayList()
+        val arr2: SimpleArrayList<T> = SimpleArrayList()
+        for (i in 0 until size) {
+            if (condition(this.get(i))) {
+                println("this.get(i) = " + this.get(i))
+                arr1.add(this.get(i))
+            } else
+            arr2.add(this.get(i))
+        }
+        return Pair(arr1, arr2)
     }
 }
