@@ -22,8 +22,9 @@ fun createSQLTable(c: KClass<*>): String {
 //    }
 
     sql += c.declaredMemberProperties.joinToString(", ") {
-        it.name + " " + typeCast(it.returnType.toString()) +
-            " " + if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL"
+                it.name + " " +
+                typeCast(it.returnType.toString()) + " " +
+                if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL"
     }
     sql += ")"
 
@@ -47,10 +48,17 @@ fun typeCast(t: String): String {
 // 2. INSERT INTO
 fun insertSQLInto(o: Any): String {
     val clazz: KClass<Any> = o::class as KClass<Any>
-    clazz.declaredMemberProperties.forEach {
-        println(it.call(o).toString())
-    }
-    return ""
+
+    // INSERT INTO Student (name, number, type) VALUES ('Alex', 7, 'Doctoral')
+    return "INSERT INTO " +
+            clazz.simpleName + " (" +
+            clazz.declaredMemberProperties.joinToString(", ") { it.name } + ") VALUES (" +
+            clazz.declaredMemberProperties.joinToString(", ") {
+                val propValue = it.call(o)
+                if (propValue is String || propValue is Enum<*>)
+                    "'$propValue'"
+                else propValue.toString()
+            } + ")"
 }
 
 
@@ -59,5 +67,5 @@ fun main() {
     val s = Student(7, "Alex", StudentType.Doctoral)
     //println(createSQLTable(Student::class))
     //println(createSQLTable(s::class))
-    insertSQLInto(s)
+    println(insertSQLInto(s))
 }
