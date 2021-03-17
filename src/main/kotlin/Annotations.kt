@@ -1,17 +1,18 @@
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
-annotation class TestCase
+@Target(AnnotationTarget.FUNCTION)
+annotation class TestCase (val desc: String, val code: Int = -1)
 
-@TestCase
+
 class Test {
 
-    @TestCase
+
     val prop: Int = 0
 
-    @TestCase
+    @TestCase ("desc...", 4)
     fun test1() {
 
     }
 
+    @TestCase ("desc...")
     fun test2() {
 
     }
