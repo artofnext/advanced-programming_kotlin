@@ -72,10 +72,10 @@ interface TypeMapping {
 
 class mySQL: TypeMapping {
     override fun mapType(c: KClass<*>): String {
-        //TODO("Not yet implemented")
+        // number INT NOT NULL, name VARCHAR(255) NOT NULL, type VARCHAR(8)
         return when (c) {
             Int::class -> "INT"
-            Boolean::class -> "VARCHAR(50)"
+            Boolean::class -> "BOOL"
             String::class -> "VARCHAR(50)"
             StudentType::class -> "VARCHAR(8)"
             // todo add more
@@ -93,7 +93,16 @@ class mySQL: TypeMapping {
 
 class myOracle: TypeMapping {
     override fun mapType(c: KClass<*>): String {
-        TODO("Not yet implemented")
+        return when (c) {
+            Int::class -> "NUMBER"
+            Boolean::class -> "BOOL"
+            String::class -> "VARCHAR2(50)"
+            StudentType::class -> "VARCHAR2(8)"
+            // todo add more
+            else -> { // Note the block
+                "HZ"
+            }
+        }
     }
 
     override fun mapObject(o: Any?): String {
@@ -101,9 +110,14 @@ class myOracle: TypeMapping {
     }
 }
 
-class SQLGenerator(val typeMapping: TypeMapping) {
+class SQLGenerator(var typeMapping: TypeMapping) {
 
     fun createTable(c: KClass<*>): String {
+
+// Oracle       CREATE TABLE Student(number NUMBER NOT NULL, name VARCHAR2(50) NOT NULL, type VARCHAR2(8) NULL);
+
+// SQL          CREATE TABLE Student (number INT NOT NULL, name VARCHAR(255) NOT NULL, type VARCHAR(8));
+
         return  "CREATE TABLE " +
                 c.simpleName + " (" +
                 c.declaredMemberProperties.joinToString(", ") {
@@ -117,6 +131,10 @@ class SQLGenerator(val typeMapping: TypeMapping) {
         TODO("Not yet implemented")
         val clazz: KClass<Any> = o::class as KClass<Any>
         // INSERT INTO Student (name, number, type) VALUES ('Alex', 7, 'Doctoral')
+
+        // INSERT INTO emp (empno, ename, job, sal, comm, deptno)
+        // VALUES (4160, 'STURDEVIN', 'SECURITY GUARD', 2045, NULL, 30);
+
         return "INSERT INTO " +
                 clazz.simpleName + " (" +
                 clazz.declaredMemberProperties.joinToString(", ") { it.name } + ") VALUES (" +
@@ -138,6 +156,9 @@ fun main() {
 
     val myGenerator = SQLGenerator(mySQL())
 
+    println(myGenerator.createTable(Student::class))
+
+    myGenerator.typeMapping = myOracle()
     println(myGenerator.createTable(Student::class))
 
 }
