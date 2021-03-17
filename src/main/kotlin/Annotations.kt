@@ -1,3 +1,4 @@
+import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -24,6 +25,7 @@ class Tests {
 
     }
 
+    @Deprecated("old")
     fun test3() {
 
     }
@@ -40,7 +42,16 @@ fun main() {
         if(hasAnn) {
             val ann = it.findAnnotation<TestCase>()
             println(it)
-            //println(ann.desc)
+//            println(ann!!.desc)
+//          println(ann?.desc)   // shows null
+          println(ann?.desc ?: "")  // workaround null
         }
     }
+
+    val c = String::class
+
+//    " ".strip()
+
+        c.declaredFunctions.filter { it.hasAnnotation<Deprecated>() }.forEach { println(it)}
+
 }
