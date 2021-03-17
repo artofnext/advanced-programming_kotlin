@@ -1,7 +1,5 @@
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
+import java.lang.reflect.InvocationTargetException
+import kotlin.reflect.full.*
 
 @Target(AnnotationTarget.FUNCTION)
 annotation class TestCase (val desc: String, val code: Int = -1)
@@ -17,7 +15,7 @@ class Tests {
 
     @TestCase ("desc...", 4)
     fun test1() {
-
+        println("test1")
     }
 
     @TestCase ("desc...")
@@ -39,12 +37,19 @@ fun main() {
 
     clazz.declaredMemberFunctions.forEach {
         val hasAnn = it.hasAnnotation<TestCase>()
+        val obj = clazz.createInstance()
         if(hasAnn) {
             val ann = it.findAnnotation<TestCase>()
             println(it)
 //            println(ann!!.desc)
 //          println(ann?.desc)   // shows null
           println(ann?.desc ?: "")  // workaround null
+            try {
+                it.call(obj)  // call class function
+            }
+            catch (e: InvocationTargetException) {
+                println(e.cause!!.message)
+            }
         }
     }
 
