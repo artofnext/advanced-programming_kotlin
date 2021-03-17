@@ -72,6 +72,27 @@ interface TypeMapping {
 
 class mySQL: TypeMapping {
     override fun mapType(c: KClass<*>): String {
+        //TODO("Not yet implemented")
+        return when (c) {
+            Int::class -> "INT"
+            Boolean::class -> "VARCHAR(50)"
+            String::class -> "VARCHAR(50)"
+            StudentType::class -> "VARCHAR(8)"
+            // todo add more
+            else -> { // Note the block
+                "HZ"
+            }
+        }
+    }
+
+    override fun mapObject(o: Any?): String {
+        //TODO("Not yet implemented")
+        return "result"
+    }
+}
+
+class myOracle: TypeMapping {
+    override fun mapType(c: KClass<*>): String {
         TODO("Not yet implemented")
     }
 
@@ -87,7 +108,7 @@ class SQLGenerator(val typeMapping: TypeMapping) {
                 c.simpleName + " (" +
                 c.declaredMemberProperties.joinToString(", ") {
                             it.name + " " +
-                            typeMapping.mapType(it.returnType as KClass<*>) + " " +
+                            typeMapping.mapType(it.returnType.classifier as KClass<*>) + " " +
                             if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL"
                 } + ")"
     }
@@ -112,5 +133,11 @@ fun main() {
     val s = Student(7, "Alex", StudentType.Doctoral)
     //println(createSQLTable(Student::class))
     //println(createSQLTable(s::class))
-    println(insertSQLInto(s))
+//    println(insertSQLInto(s))
+
+
+    val myGenerator = SQLGenerator(mySQL())
+
+    println(myGenerator.createTable(Student::class))
+
 }
