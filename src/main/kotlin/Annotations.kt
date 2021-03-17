@@ -42,8 +42,8 @@ fun main() {
             val ann = it.findAnnotation<TestCase>()
             println(it)
 //            println(ann!!.desc)
-//          println(ann?.desc)   // shows null
-          println(ann?.desc ?: "")  // workaround null
+//            println(ann?.desc)   // shows null
+            println(ann?.desc ?: "")  // workaround null
             try {
                 it.call(obj)  // call class function
             }
