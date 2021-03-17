@@ -17,11 +17,6 @@ fun createSQLTable(c: KClass<*>): String {
     var sql = "CREATE TABLE "
     sql += c.simpleName // will be table name
     sql += " ("
-//    c.declaredMemberProperties.forEach {
-//        sql += it.name + " " + typeCast(it.returnType.toString()) +
-//                " " + if (it.returnType.isMarkedNullable) "NULL," else "NOT NULL,"
-//    }
-
     sql += c.declaredMemberProperties.joinToString(", ") {
                 it.name + " " +
                 typeCast(it.returnType.toString()) + " " +
@@ -39,7 +34,7 @@ fun typeCast(t: String): String {
         "kotlin.Int" -> "INT"
         "kotlin.String" -> "VARCHAR(50)"
         "StudentType?" -> "VARCHAR(8)"
-        // todo add more
+        // add more
         else -> { // Note the block
             "HZ"
         }
@@ -128,12 +123,9 @@ class SQLGenerator(var typeMapping: TypeMapping) {
     }
 
     fun insertSQLInto(o: Any): String {
-        TODO("Not yet implemented")
         val clazz: KClass<Any> = o::class as KClass<Any>
-        // INSERT INTO Student (name, number, type) VALUES ('Alex', 7, 'Doctoral')
 
-        // INSERT INTO emp (empno, ename, job, sal, comm, deptno)
-        // VALUES (4160, 'STURDEVIN', 'SECURITY GUARD', 2045, NULL, 30);
+        // INSERT INTO Student (name, number, type) VALUES ('Alex', 7, 'Doctoral')
 
         return "INSERT INTO " +
                 clazz.simpleName + " (" +
@@ -146,6 +138,25 @@ class SQLGenerator(var typeMapping: TypeMapping) {
                 } + ")"
     }
 }
+
+@DbName("STUDENT")
+data class StudentAnnotated(
+    @PrimaryKey
+    val number: Int,
+    @Length(50)
+    val name: String,
+    @DbName("degree")
+    val type: StudentType
+)
+
+@Target(AnnotationTarget.PROPERTY)
+annotation class Length(val value: Int)
+
+@Target(AnnotationTarget.PROPERTY)
+annotation class PrimaryKey
+
+@Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
+annotation class DbName(val value: String)
 
 fun main() {
     val s = Student(7, "Alex", StudentType.Doctoral)
@@ -160,5 +171,6 @@ fun main() {
 
     myGenerator.typeMapping = myOracle()
     println(myGenerator.createTable(Student::class))
+    println(myGenerator.insertSQLInto(s))
 
 }
