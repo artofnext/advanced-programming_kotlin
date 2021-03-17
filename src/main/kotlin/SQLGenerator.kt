@@ -1,5 +1,7 @@
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
 data class Student(
     val number: Int,
@@ -116,7 +118,7 @@ class SQLGenerator(var typeMapping: TypeMapping) {
         return  "CREATE TABLE " +
                 c.simpleName + " (" +
                 c.declaredMemberProperties.joinToString(", ") {
-                            it.name + " " +
+                    it.name + " " +
                             typeMapping.mapType(it.returnType.classifier as KClass<*>) + " " +
                             if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL"
                 } + ")"
@@ -139,8 +141,50 @@ class SQLGenerator(var typeMapping: TypeMapping) {
     }
 }
 
+class SQLGeneratorA(var typeMapping: TypeMapping) {
+
+    fun createTable(c: KClass<*>): String {
+
+// Oracle       CREATE TABLE Student(number NUMBER NOT NULL, name VARCHAR2(50) NOT NULL, type VARCHAR2(8) NULL);
+
+// SQL          CREATE TABLE Student (number INT NOT NULL, name VARCHAR(255) NOT NULL, type VARCHAR(8));
+
+        var sql = "CREATE TABLE "
+        sql += if (c.hasAnnotation<DbName>())   // if class annotation exist
+            c.findAnnotation<DbName>()?.value   // use it value as table name
+            else c.simpleName                   // else use class name itself
+        sql += " ("
+        sql += c.declaredMemberProperties.joinToString(", ") {
+            it.name + " " +
+                    typeMapping.mapType(it.returnType.classifier as KClass<*>) + " " +
+                    if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL"
+        }
+        sql += ")"
+
+        // CREATE TABLE Student (number INT NOT NULL, name VARCHAR(255) NOT NULL, type VARCHAR(8));
+        return sql
+
+    }
+
+    fun insertSQLInto(o: Any): String {
+        val clazz: KClass<Any> = o::class as KClass<Any>
+
+        // INSERT INTO Student (name, number, type) VALUES ('Alex', 7, 'Doctoral')
+
+        return "INSERT INTO " +
+                clazz.simpleName + " (" +
+                clazz.declaredMemberProperties.joinToString(", ") { it.name } + ") VALUES (" +
+                clazz.declaredMemberProperties.joinToString(", ") {
+                    val propValue = it.call(o)
+                    if (propValue is String || propValue is Enum<*>)
+                        "'$propValue'"
+                    else propValue.toString()
+                } + ")"
+    }
+}
+
 @DbName("STUDENT")
-data class StudentAnnotated(
+data class StudentA(
     @PrimaryKey
     val number: Int,
     @Length(50)
@@ -158,6 +202,7 @@ annotation class PrimaryKey
 @Target(AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
 annotation class DbName(val value: String)
 
+
 fun main() {
     val s = Student(7, "Alex", StudentType.Doctoral)
     //println(createSQLTable(Student::class))
@@ -165,12 +210,21 @@ fun main() {
 //    println(insertSQLInto(s))
 
 
-    val myGenerator = SQLGenerator(mySQL())
+//    val myGenerator = SQLGenerator(mySQL())
+//
+//    println(myGenerator.createTable(Student::class))
+//
+//
+//
+//    myGenerator.typeMapping = myOracle()
+//    println(myGenerator.createTable(Student::class))
+//    println(myGenerator.insertSQLInto(s))
 
-    println(myGenerator.createTable(Student::class))
 
-    myGenerator.typeMapping = myOracle()
-    println(myGenerator.createTable(Student::class))
-    println(myGenerator.insertSQLInto(s))
+    val myGeneratorA = SQLGeneratorA(mySQL())
+
+    println(myGeneratorA.createTable(Student::class))
+    println(myGeneratorA.createTable(StudentA::class))
+
 
 }
