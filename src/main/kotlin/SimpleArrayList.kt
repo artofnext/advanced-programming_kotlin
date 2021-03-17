@@ -1,9 +1,9 @@
 fun main() {
     //test1()
 
-    //test2()
+    test2()
 
-    test3()
+    //test3()
 }
 
 fun test1() {
@@ -48,8 +48,7 @@ fun test2 () {
     list.add(49)
     list.add(38)
 
-    //??? Problem with comparison in lambda - when use < or > get type mismatch Unit - Boolean ???
-    val c = list.count {it == 2 }
+    val c = list.count {it >= 12 }
 
 
     println(c)
@@ -71,7 +70,7 @@ fun test3 () {
     list.add(0)
     list.add(38)
 
-    val (neg, pos) = list.partition {it: Any? -> it == 0 }
+    val (neg, pos) = list.partition { it == 0 }
 
     println(neg)
     println(pos)
@@ -85,7 +84,7 @@ class SimpleArrayList<T> {
 
     var isEmpty:  Boolean = size == 0
 
-    fun add(elem: Any?) {
+    fun add(elem: T) {
         check(elem != null) {"can't add null " + elem.toString()}
         if (size == elements.size)
             elements = elements.copyOf(elements.size + 10)
@@ -101,12 +100,13 @@ class SimpleArrayList<T> {
         return result
     }
 
-    fun get(index: Int): Any? {
+    @Suppress("UNCHECKED_CAST")
+    operator fun get(index: Int): T {
         check(index in 0 until size) {"index out of range"}
-        return elements[index]
+        return elements[index] as T
     }
 
-    fun contain(elem: Any?): Boolean {
+    fun contain(elem: T): Boolean {
         return elements.contains(elem)
     }
 
@@ -117,7 +117,7 @@ class SimpleArrayList<T> {
         return this
     }
 
-    fun count(accept: (Any?) -> Boolean): Int {
+    fun count(accept: (T) -> Boolean): Int {
         var counter: Int = 0
         for (i in 0 until this.size) {
             if (accept(this.get(i))) counter++
@@ -125,7 +125,7 @@ class SimpleArrayList<T> {
         return counter
     }
 
-    fun partition(condition: (it: Any?) -> Boolean): Pair<SimpleArrayList<T>, SimpleArrayList<T>> {
+    fun partition(condition: (it: T) -> Boolean): Pair<SimpleArrayList<T>, SimpleArrayList<T>> {
         val arr1: SimpleArrayList<T> = SimpleArrayList()
         val arr2: SimpleArrayList<T> = SimpleArrayList()
         for (i in 0 until size) {
