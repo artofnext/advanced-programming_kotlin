@@ -141,6 +141,7 @@ class SQLGenerator(var typeMapping: TypeMapping) {
     }
 }
 
+// Creates table from class with annotations
 class SQLGeneratorA(var typeMapping: TypeMapping) {
 
     fun createTable(c: KClass<*>): String {
@@ -158,10 +159,13 @@ class SQLGeneratorA(var typeMapping: TypeMapping) {
             (if (it.hasAnnotation<DbName>())
                 it.findAnnotation<DbName>()?.value.also { println(it) }
             else it.name) + " " +
-                    typeMapping.mapType(it.returnType.classifier as KClass<*>) +"(" +
-                    (if (it.hasAnnotation<Length>())
-                        it.findAnnotation<Length>()?.value.toString()
-                    else "50") + ") " +
+                    typeMapping.mapType(it.returnType.classifier as KClass<*>) +
+                    if (typeMapping.mapType(it.returnType.classifier as KClass<*>) == "VARCHAR") {
+                        "(" +
+                        (if (it.hasAnnotation<Length>())
+                            it.findAnnotation<Length>()?.value.toString()
+                        else "50") + ") "
+                    } else "" +
                     if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL" + " " +
                             if (it.hasAnnotation<PrimaryKey>()) "PRIMARY KEY" else ""
         }
