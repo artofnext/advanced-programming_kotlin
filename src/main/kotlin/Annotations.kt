@@ -37,6 +37,8 @@ fun main() {
 
     clazz.declaredMemberFunctions.forEach {
         val hasAnn = it.hasAnnotation<TestCase>()
+        val annotats = it.annotations
+        println(annotats)
         val obj = clazz.createInstance()
         if(hasAnn) {
             val ann = it.findAnnotation<TestCase>()
@@ -57,6 +59,6 @@ fun main() {
 
 //    " ".strip()
 
-        c.declaredFunctions.filter { it.hasAnnotation<Deprecated>() }.forEach { println(it)}
+//        c.declaredFunctions.filter { it.hasAnnotation<Deprecated>() }.forEach { println(it)}
 
 }

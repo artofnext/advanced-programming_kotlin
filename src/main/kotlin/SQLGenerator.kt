@@ -73,8 +73,8 @@ class mySQL: TypeMapping {
         return when (c) {
             Int::class -> "INT"
             Boolean::class -> "BOOL"
-            String::class -> "VARCHAR(50)"
-            StudentType::class -> "VARCHAR(8)"
+            String::class -> "VARCHAR"
+            StudentType::class -> "VARCHAR"
             // todo add more
             else -> { // Note the block
                 "HZ"
@@ -151,13 +151,19 @@ class SQLGeneratorA(var typeMapping: TypeMapping) {
 
         var sql = "CREATE TABLE "
         sql += if (c.hasAnnotation<DbName>())   // if class annotation exist
-            c.findAnnotation<DbName>()?.value   // use it value as table name
+            c.findAnnotation<DbName>()?.value.also { println(it) }   // use it value as table name
             else c.simpleName                   // else use class name itself
         sql += " ("
         sql += c.declaredMemberProperties.joinToString(", ") {
-            it.name + " " +
-                    typeMapping.mapType(it.returnType.classifier as KClass<*>) + " " +
-                    if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL"
+            (if (it.hasAnnotation<DbName>())
+                it.findAnnotation<DbName>()?.value.also { println(it) }
+            else it.name) + " " +
+                    typeMapping.mapType(it.returnType.classifier as KClass<*>) +"(" +
+                    (if (it.hasAnnotation<Length>())
+                        it.findAnnotation<Length>()?.value.toString()
+                    else "50") + ") " +
+                    if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL" + " " +
+                            if (it.hasAnnotation<PrimaryKey>()) "PRIMARY KEY" else ""
         }
         sql += ")"
 
@@ -187,7 +193,7 @@ class SQLGeneratorA(var typeMapping: TypeMapping) {
 data class StudentA(
     @PrimaryKey
     val number: Int,
-    @Length(50)
+    @Length(55)
     val name: String,
     @DbName("degree")
     val type: StudentType
