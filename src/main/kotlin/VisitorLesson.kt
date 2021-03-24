@@ -6,8 +6,16 @@ abstract class Element(val name: String) {
 }
 
 interface Visitor {
-    fun visit(c: Composite)
-    fun visit(l: Leaf)
+    fun visit(c: Composite): Boolean = true
+    fun visit(l: Leaf) {}
+}
+
+class MyVisitor: Visitor {
+
+    override fun visit(l: Leaf) {
+        TODO("Not yet implemented")
+    }
+
 }
 
 class Leaf(name: String): Element(name) {
