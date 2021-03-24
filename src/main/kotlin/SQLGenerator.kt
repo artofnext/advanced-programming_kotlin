@@ -165,7 +165,7 @@ class SQLGeneratorA(var typeMapping: TypeMapping) {
                         (if (it.hasAnnotation<Length>())
                             it.findAnnotation<Length>()?.value.toString()
                         else "50") + ") "
-                    } else "" +
+                    } else " " +
                     if (it.returnType.isMarkedNullable) "NULL" else "NOT NULL" + " " +
                             if (it.hasAnnotation<PrimaryKey>()) "PRIMARY KEY" else ""
         }
