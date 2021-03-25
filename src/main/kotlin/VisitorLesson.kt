@@ -36,19 +36,19 @@ fun countComposies(c: Composite): Int {
     c.children.forEach {
         if (it is Composite) {
             count++
-            count += countLeafs(it)
+            count += countLeaves(it)
         }
     }
     return count
 }
 
-fun countLeafs(c: Composite): Int {
+fun countLeaves(c: Composite): Int {
     var count = 1
     c.children.forEach {
         if(it is Leaf)
             count ++
         else if(it is Composite)
-            count += countLeafs(it)
+            count += countLeaves(it)
     }
     return count
 }
@@ -66,6 +66,6 @@ fun main() {
 
     b.children.add(Leaf("f"))
 
-    println(countLeafs(a))
+    println(countLeaves(a))
     println(countComposies(a))
 }
