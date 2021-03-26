@@ -28,8 +28,9 @@ class DirElem(name: String): Elem(name) {
 
     override var nElements: Int = 0
         get() {
-            var result = 0
+            var result = content.size
             content.forEach {
+                if(it::class == DirElem::class)
                 result += it.nElements
             }
             return result
@@ -90,6 +91,8 @@ fun main() {
 
     println("nElements dir2")
     println(dir2.nElements)
+
+    println(dir0::class == DirElem::class)
 }
 
 
