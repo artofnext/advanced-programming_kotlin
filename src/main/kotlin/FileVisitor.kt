@@ -5,6 +5,8 @@ abstract class Elem(val name: String) {
 
     var parent: DirElem? = null
 
+    abstract var nElements: Int
+
     // receive parent's depth
     abstract fun updateDepth(value: Int)
 
@@ -14,6 +16,7 @@ abstract class Elem(val name: String) {
 
 class FileElem(name: String): Elem(name) {
 
+    override var nElements = 1
     override fun updateDepth(value: Int) {
         this.depth = value + 1
     }
@@ -23,7 +26,14 @@ class DirElem(name: String): Elem(name) {
 
     var content = mutableListOf<Elem>()
 
-    var nElements = 0
+    override var nElements: Int = 0
+        get() {
+            var result = 0
+            content.forEach {
+                result += it.nElements
+            }
+            return result
+        }
 
     override fun updateDepth(value: Int) {
         this.depth = value + 1
@@ -32,9 +42,6 @@ class DirElem(name: String): Elem(name) {
         }
     }
 
-    fun updateNElements() {
-        this.nElements =
-    }
 
     fun addElem(e: Elem) {
         content.add(e)
@@ -75,9 +82,14 @@ fun main() {
     println(dir2.depth)
     println(dir2.content[0].depth)
 
+    println("nElements dir0")
+    println(dir0.nElements)
 
+    println("nElements dir1")
+    println(dir1.nElements)
 
-
+    println("nElements dir2")
+    println(dir2.nElements)
 }
 
 
