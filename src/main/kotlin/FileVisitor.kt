@@ -93,6 +93,7 @@ fun main() {
     println(dir2.nElements)
 
     println(dir0::class == DirElem::class)
+
 }
 
 
