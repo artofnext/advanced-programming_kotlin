@@ -1,5 +1,8 @@
+package injector
 import java.awt.GridLayout
 import java.awt.LayoutManager
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 class DefaultSetup : FrameSetup {
     override val title: String
@@ -25,3 +28,4 @@ class Size : Action {
         window.setSize(500, 500)
     }
 }
+

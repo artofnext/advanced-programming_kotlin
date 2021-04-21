@@ -1,3 +1,4 @@
+package injector
 import java.awt.*
 import java.util.*
 import javax.swing.JButton
@@ -16,11 +17,14 @@ interface Action {
 class Window {
     private val frame = JFrame()
 
-    // 1) eliminar dependencia de DefaultSetup; @Inject
-    private val setup: FrameSetup = DefaultSetup()
+    // 1) eliminar dependencia de DefaultSetup;
+    @Inject
+    private lateinit var setup: FrameSetup
 
-    // 2) eliminar dependencias das acoes concretas (Center, Size); @InjectAdd
-    private val actions = mutableListOf<Action>(Move(), Size())
+    // 2) eliminar dependencias das acoes concretas (Center, Size);
+    @InjectAdd
+    // private val actions = mutableListOf<Action>(Move(), Size())
+    private lateinit var actions: MutableList<Action>
 
     init {
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -54,7 +58,15 @@ class Window {
 
 }
 
+@Target(AnnotationTarget.PROPERTY)
+annotation class InjectAdd
+
+@Target(AnnotationTarget.PROPERTY)
+annotation class Inject
+
 fun main () {
-    val w = Window() // substituir por criacao com injecao
-    w.open()
+    //val w = Window() // substituir por criacao com injecao
+//    val w = Injector.create(Window::class) // em vez de Window()
+
+//    w.open()
 }
