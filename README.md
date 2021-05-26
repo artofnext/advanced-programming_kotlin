@@ -41,7 +41,12 @@ It is also possible to filter elements of a model using a predicate passed as a 
 <Jvalue>.filter( (Jvalue) -> Boolean): List<Jvalue>
 ```
 
-## Help
+### Visualisation
+Visualization is done using [Eclipse SWT library.](https://www.eclipse.org/swt/)
+To use this part, you must import this library into your project
+# END
+The library allows the creation of custom plugins to extend the functionality of the library.
+
 
 Any advise for common problems or issues.
 ```
